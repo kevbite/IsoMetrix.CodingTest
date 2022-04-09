@@ -1,3 +1,4 @@
+using System;
 using FluentAssertions;
 using Xunit;
 
@@ -71,5 +72,19 @@ public class StringCalculatorTests
     {
         StringCalculator.Add(input)
             .Should().Be(expectedOutput);
+    }
+    
+    [Theory]
+    [InlineData("-1", "-1")]
+    [InlineData("1,-3", "-3")]
+    [InlineData("1,-3,-4", "-3,-4")]
+    [InlineData("//;\n1;-2", "-2")]
+    [InlineData("//;\n-1;2;-3", "-1,-3")]
+    public void ShouldThrowAnInvalidArgumentExceptionWhenANegativeNumberIsPassed(string input, string expectedExceptionMessage)
+    {
+        Action action = () => StringCalculator.Add(input);
+        
+        action.Should().Throw<ArgumentException>()
+            .WithMessage($"Negatives not allowed: {expectedExceptionMessage} (Parameter 'input')");
     }
 }
