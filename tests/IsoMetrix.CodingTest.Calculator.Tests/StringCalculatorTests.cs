@@ -50,4 +50,14 @@ public class StringCalculatorTests
         StringCalculator.Add(input)
             .Should().Be(expectedOutput);
     }
+    
+    [Theory]
+    [InlineData("1\n2,3", 6)]
+    [InlineData("5,6\n7,8", 26)]
+    [InlineData("10,21,32\n43", 106)]
+    public void ShouldReturnTheSumOfAllNumbersWithMixedCommaAndNewLineDelimiters(string input, int expectedOutput)
+    {
+        StringCalculator.Add(input)
+            .Should().Be(expectedOutput);
+    }
 }

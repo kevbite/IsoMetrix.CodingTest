@@ -4,7 +4,7 @@ namespace IsoMetrix.CodingTest.Calculator;
 
 public static class StringCalculator
 {
-    private static readonly SortedSet<char> PossibleDelimiters = new() { ',' };
+    private static readonly SortedSet<char> PossibleDelimiters = new() { ',', '\n' };
     public static int Add(ReadOnlySpan<char> input)
     {
         var tokens = GetTokens(input);
