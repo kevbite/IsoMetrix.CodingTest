@@ -4,7 +4,7 @@ namespace IsoMetrix.CodingTest.Calculator;
 
 public static class StringCalculator
 {
-    private static readonly SortedSet<char> PossibleDelimiters = new() { ',', '\n' };
+    private static readonly SortedSet<char> DefaultDelimiters = new() { ',', '\n' };
     public static int Add(ReadOnlySpan<char> input)
     {
         var tokens = GetTokens(input);
@@ -24,9 +24,12 @@ public static class StringCalculator
                 numberStart = null;
             }
         }
+        
+        input = ConsumeToDelimiters(input, out var delimiters);
+
         for (var i = 0; i < input.Length; i++)
         {
-            if (PossibleDelimiters.Contains(input[i]))
+            if (delimiters.Contains(input[i]))
             {
                 TryAddNumberAndResetStart(input, i);
                 tokens.Add(new Delimiter(input[i]));
@@ -41,6 +44,20 @@ public static class StringCalculator
         TryAddNumberAndResetStart(input, input.Length);
 
         return tokens.AsReadOnly();
+    }
+
+    private static ReadOnlySpan<char> ConsumeToDelimiters(ReadOnlySpan<char> input, out SortedSet<char> delimiters)
+    {
+        if(input.StartsWith("//"))
+        {
+            var indexOfDelimiterPattern = input.IndexOf('\n');
+            var pattern = input[2..indexOfDelimiterPattern];
+
+            delimiters = new SortedSet<char> { pattern[0] };
+            return input[(indexOfDelimiterPattern + 1)..];
+        }
+        delimiters = DefaultDelimiters;
+        return input;
     }
 }
 

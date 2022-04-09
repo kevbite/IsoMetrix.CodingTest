@@ -60,4 +60,16 @@ public class StringCalculatorTests
         StringCalculator.Add(input)
             .Should().Be(expectedOutput);
     }
+    
+    [Theory]
+    [InlineData("//;\n", 0)]
+    [InlineData("//;\n;", 0)]
+    [InlineData("//;\n1;2", 3)]
+    [InlineData("//;\n1;2;3", 6)]
+    [InlineData("//+\n1+2+3", 6)]
+    public void ShouldReturnTheSumOfAllNumbersWithCustomSingleDelimiter(string input, int expectedOutput)
+    {
+        StringCalculator.Add(input)
+            .Should().Be(expectedOutput);
+    }
 }
