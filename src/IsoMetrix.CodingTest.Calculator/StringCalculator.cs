@@ -82,5 +82,12 @@ internal record Delimiter(char Value) : Token;
 
 internal record Number(string Value) : Token
 {
-    public int GetValue() => int.Parse(Value, CultureInfo.InvariantCulture);
+    const int MaxValue = 1000;
+
+    public int GetValue() => int.Parse(Value, CultureInfo.InvariantCulture)
+        switch
+        {
+            > MaxValue => 0,
+            var x => x
+        };
 };

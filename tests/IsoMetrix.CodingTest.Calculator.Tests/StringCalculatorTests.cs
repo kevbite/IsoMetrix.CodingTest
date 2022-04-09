@@ -87,4 +87,16 @@ public class StringCalculatorTests
         action.Should().Throw<ArgumentException>()
             .WithMessage($"Negatives not allowed: {expectedExceptionMessage} (Parameter 'input')");
     }
+    
+    [Theory]
+    [InlineData("1001", 0)]
+    [InlineData("1,1001", 1)]
+    [InlineData("1,1001,1234", 1)]
+    [InlineData("//;\n1;1001", 1)]
+    [InlineData("//;\n1001;2;2002", 2)]
+    public void ShouldIgnoreNumbersBiggerThanMaxSize(string input, int expectedOutput)
+    {
+        StringCalculator.Add(input)
+            .Should().Be(expectedOutput);
+    }
 }
