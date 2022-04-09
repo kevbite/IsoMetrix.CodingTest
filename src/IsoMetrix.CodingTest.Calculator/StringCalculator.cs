@@ -71,7 +71,7 @@ public static class StringCalculator
         {
             var indexOfDelimiterPattern = input.IndexOf('\n');
             var pattern = input[2..indexOfDelimiterPattern];
-            
+
             delimiters = ParseDelimiterPattern(pattern);
             return input[(indexOfDelimiterPattern + 1)..];
         }
@@ -82,16 +82,20 @@ public static class StringCalculator
 
     private static SortedSet<string> ParseDelimiterPattern(ReadOnlySpan<char> pattern)
     {
-        if(pattern.StartsWith("[") && pattern.EndsWith("]"))
+        if (pattern.StartsWith("[") && pattern.EndsWith("]"))
         {
-            var delimiters = new SortedSet<string>
+            var delimiters = new SortedSet<string>();
+
+            while (pattern.Length > 0)
             {
-                pattern[1..^1].ToString()
-            };
+                var end = pattern.IndexOf("]");
+                delimiters.Add(pattern[1..(end - 1)].ToString());
+                pattern = pattern[(end + 1)..];
+            }
 
             return delimiters;
         }
-        
+
         return new SortedSet<string> { pattern[0].ToString() };
     }
 }

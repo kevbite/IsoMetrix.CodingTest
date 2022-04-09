@@ -111,4 +111,13 @@ public class StringCalculatorTests
         StringCalculator.Add(input)
             .Should().Be(expectedOutput);
     }
+    
+    [Theory]
+    [InlineData("//[;;][++]\n1;;2++3", 6)]
+    [InlineData("//[++][;;]\n1;;2++3", 6)]
+    public void ShouldReturnTheSumOfAllNumbersWithMultipleCustomMultiCharDelimiter(string input, int expectedOutput)
+    {
+        StringCalculator.Add(input)
+            .Should().Be(expectedOutput);
+    }
 }
