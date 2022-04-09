@@ -4,7 +4,7 @@ namespace IsoMetrix.CodingTest.Calculator;
 
 public static class StringCalculator
 {
-    private static readonly SortedSet<char> DefaultDelimiters = new() { ',', '\n' };
+    private static readonly SortedSet<string> DefaultDelimiters = new() { ",", "\n" };
 
     public static int Add(ReadOnlySpan<char> input)
     {
@@ -43,10 +43,15 @@ public static class StringCalculator
 
         for (var i = 0; i < input.Length; i++)
         {
-            if (delimiters.Contains(input[i]))
+            foreach (var delimiter in delimiters)
             {
-                TryAddNumberAndResetStart(input, i);
-                tokens.Add(new Delimiter(input[i]));
+                if (input[i..].StartsWith(delimiter))
+                {
+                    TryAddNumberAndResetStart(input, i);
+                    tokens.Add(new Delimiter(input[i]));
+                    i += delimiter.Length - 1;
+                    break;
+                }
             }
 
             if (!numberStart.HasValue && (char.IsDigit(input[i]) || input[i] == '-'))
@@ -60,19 +65,34 @@ public static class StringCalculator
         return tokens.AsReadOnly();
     }
 
-    private static ReadOnlySpan<char> ConsumeToDelimiters(ReadOnlySpan<char> input, out SortedSet<char> delimiters)
+    private static ReadOnlySpan<char> ConsumeToDelimiters(ReadOnlySpan<char> input, out SortedSet<string> delimiters)
     {
         if (input.StartsWith("//"))
         {
             var indexOfDelimiterPattern = input.IndexOf('\n');
             var pattern = input[2..indexOfDelimiterPattern];
-
-            delimiters = new SortedSet<char> { pattern[0] };
+            
+            delimiters = ParseDelimiterPattern(pattern);
             return input[(indexOfDelimiterPattern + 1)..];
         }
 
         delimiters = DefaultDelimiters;
         return input;
+    }
+
+    private static SortedSet<string> ParseDelimiterPattern(ReadOnlySpan<char> pattern)
+    {
+        if(pattern.StartsWith("[") && pattern.EndsWith("]"))
+        {
+            var delimiters = new SortedSet<string>
+            {
+                pattern[1..^1].ToString()
+            };
+
+            return delimiters;
+        }
+        
+        return new SortedSet<string> { pattern[0].ToString() };
     }
 }
 
